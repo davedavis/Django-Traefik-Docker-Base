@@ -41,7 +41,7 @@ Important: If you're using CloudFlare, ensure cloudflare full SSL is set.
 
 1) docker-compose down -v 
 2) docker compose up -d --build
-3) docker-compose -f local.yml run --rm django python manage.py migrate
+3) docker-compose -f docker-compose.yml exec web python manage.py migrate --noinput
 4) docker-compose -f docker-compose.yml exec web python manage.py createsuperuser
 5) docker-compose -f docker-compose.yml logs -f
 
