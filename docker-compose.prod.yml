@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: ./app
+      dockerfile: Dockerfile.prod
+    command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; gunicorn --bind 0.0.0.0:${PROD_PORT} ${PROD_APP_WSGI}.wsgi'
+    expose:
+      - ${PROD_PORT}
+    environment:
+      - DEBUG=0
+      - DATABASE_URL=postgresql://${PROD_DB_USER}:${PROD_DB_PASS}@db:5432/${PROD_DB_DATABASE}
+      - DJANGO_ALLOWED_HOSTS=.${PROD_DOMAIN}
+      - SECRET_KEY=${PROD_SECRET_KEY}
+      - DEFAULT_PORT=${PROD_PORT}
+    depends_on:
+      - db
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.django.rule=Host(`www.${PROD_DOMAIN}`)"
+      - "traefik.http.routers.django.tls=true"
+      - "traefik.http.routers.django.tls.certresolver=letsencrypt"
+  db:
+    image: postgres:13-alpine
+    volumes:
+      - postgres_data_prod:/var/lib/postgresql/data/
+    expose:
+      - 5432
+    environment:
+      - POSTGRES_USER=${PROD_DB_USER}
+      - POSTGRES_PASSWORD=${PROD_DB_PASS}
+      - POSTGRES_DB=${PROD_DB_DATABASE}
+  traefik:
+    build:
+      context: .
+      dockerfile: Dockerfile.traefik
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./traefik-public-certificates:/certificates"
+
+volumes:
+  postgres_data_prod:
+  traefik-public-certificates:
