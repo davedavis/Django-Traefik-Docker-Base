@@ -49,4 +49,6 @@ Important: If you're using CloudFlare, ensure cloudflare full SSL is set.
 # Notes
     Make sure you edit your /etc/hosts file to point your DEV_DOMAIN in the env file to 0.0.0.0
     Make sure you set your cloudflare SSL settings to "full", not flexible.
-    I run other containers locally, so extracted DEV_PORT so I wouldn't get confused.
+    I run other containers locally, so extracted DEV_PORT so I wouldn't get confused. 
+
+#### Remember: Do **NOT** add your .env file to source control. I did it for your convenience only. 
