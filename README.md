@@ -9,6 +9,7 @@ the following requirements:
 4) Whitenoise for static files
 5) Allauth with Google signin/signup installed
 6) Works with cloudflare proxied DNS
+7) Has a nice admin
 
 This is a django base project that lets me get moving on a new side project quickly. 
 Think of it as a much less complicated version of cookiecutter django.

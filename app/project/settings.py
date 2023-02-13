@@ -20,14 +20,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # For importing env variables from docker compose file
 env = environ.Env()
 
-# To Change default port
+# To Change default port as sometimes 8000 is being used.
 runserver.default_port = env('DEFAULT_PORT')
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-# SECRET_KEY = "django-insecure-49ex@f+y($scl^&37mt!l7hau#(h%whyxl1sm!ti_ct3ope1gx"
+# Change this in the .env file
 SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -39,6 +35,7 @@ CSRF_TRUSTED_ORIGINS = ['https://*' + env('DJANGO_ALLOWED_HOSTS')]
 # Application definition
 
 INSTALLED_APPS = [
+    "grappelli",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -54,9 +51,10 @@ INSTALLED_APPS = [
     'debug_toolbar',
 ]
 
+# Required for AllAuth
 SITE_ID = 1
 
-# Provider specific settings
+# Provider specific settings. Here only Google us used. See AllAuth Docs.
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
         'SCOPE': [
@@ -69,13 +67,9 @@ SOCIALACCOUNT_PROVIDERS = {
             'access_type': 'offline',
         }
     },
-
 }
 
-# For showing Toolbar in Docker
-
-
-# For Django Debug Toolbar, so it can display in Docker.
+# For Django Debug Toolbar, so it can display in Docker containers.
 INTERNAL_IPS = ['127.0.0.1', ]
 if DEBUG:
     import socket
@@ -83,10 +77,8 @@ if DEBUG:
     hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
     INTERNAL_IPS += [ip[:-1] + '1' for ip in ips]
 
-
     def show_toolbar(request):
         return True
-
 
     DEBUG_TOOLBAR_CONFIG = {
         'SHOW_TOOLBAR_CALLBACK': show_toolbar,

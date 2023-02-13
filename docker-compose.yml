@@ -11,7 +11,8 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
   web:
     build: ./app
-    command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; python manage.py runserver 0.0.0.0:${DEV_PORT}'
+    command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; python manage.py collectstatic --noinput && python manage.py migrate &&
+             python manage.py createsuperuser --noinput && python manage.py runserver 0.0.0.0:${DEV_PORT}'
     volumes:
       - ./app:/app
     expose:
@@ -22,6 +23,9 @@ services:
       - DATABASE_URL=postgresql://${DEV_DB_USER}:${DEV_DB_PASS}@db:5432/${DEV_DB_DATABASE}
       - SECRET_KEY=${DEV_SECRET_KEY}
       - DEFAULT_PORT=${DEV_PORT}
+      - DJANGO_SUPERUSER_USERNAME=${DEV_ADMIN_USERNAME}
+      - DJANGO_SUPERUSER_PASSWORD=${DEV_ADMIN_PASSWORD}
+      - DJANGO_SUPERUSER_EMAIL=${DEV_ADMIN_EMAIL}
     depends_on:
       - db
     labels:
