@@ -45,9 +45,19 @@ Important: If you're using CloudFlare, ensure cloudflare full SSL is set.
 3) docker-compose -f docker-compose.yml logs -f
 
 
+# Starting and stopping in production.
+Sometimes, if you're running a bunch of containers, you'll want to start and stop individual
+containers, do a git pull for changes and restart just that specific container. Here's how to
+do it on production:
+
+      docker-compose -f docker-compose.prod.yml stop -t 1 web
+      docker-compose -f docker-compose.prod.yml build web
+      docker-compose -f docker-compose.prod.yml up --no-start web
+      docker-compose -f docker-compose.prod.yml start web
+
 # Notes
-    Make sure you edit your /etc/hosts file to point your DEV_DOMAIN in the env file to 0.0.0.0
-    Make sure you set your cloudflare SSL settings to "full", not flexible.
-    I run other containers locally, so extracted DEV_PORT so I wouldn't get confused. 
+      Make sure you edit your /etc/hosts file to point your DEV_DOMAIN in the env file to 0.0.0.0
+      Make sure you set your cloudflare SSL settings to "full", not flexible.
+      Run other containers locally, so extracted DEV_PORT so I wouldn't get confused. 
 
 #### Remember: Do **NOT** add your .env file to source control. I did it for your convenience only. 
