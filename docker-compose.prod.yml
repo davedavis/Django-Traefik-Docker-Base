@@ -9,7 +9,7 @@ services:
     expose:
       - ${PROD_PORT}
     environment:
-      - DEBUG=0
+      - DEBUG=False
       - DATABASE_URL=postgresql://${PROD_DB_USER}:${PROD_DB_PASS}@db:5432/${PROD_DB_DATABASE}
       - DJANGO_ALLOWED_HOSTS=.${PROD_DOMAIN}
       - SECRET_KEY=${PROD_SECRET_KEY}
