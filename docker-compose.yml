@@ -7,8 +7,10 @@ services:
       - 80:80
       - 8081:8080
     volumes:
-      - "$PWD/traefik.dev.toml:/etc/traefik/traefik.toml"
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - ./traefik.dev.toml:/etc/traefik/traefik.toml
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  # Django / Main Site
   web:
     build: ./app
     command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; python manage.py collectstatic --noinput && python manage.py migrate &&
@@ -19,7 +21,7 @@ services:
       - ${DEV_PORT}
     environment:
       - DEBUG=1
-      - DJANGO_ALLOWED_HOSTS=${DEV_DOMAIN}
+      - DJANGO_ALLOWED_HOSTS=${DEV_DOMAIN},www.${DEV_DOMAIN}
       - DATABASE_URL=postgresql://${DEV_DB_USER}:${DEV_DB_PASS}@db:5432/${DEV_DB_DATABASE}
       - SECRET_KEY=${DEV_SECRET_KEY}
       - DEFAULT_PORT=${DEV_PORT}
@@ -31,7 +33,9 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.django.rule=Host(`${DEV_DOMAIN}`)"
+      - "traefik.http.routers.djangononwww.rule=Host(`www.${DEV_DOMAIN}`)"
 
+  # DB for testing. Not suitable for production.
   db:
     image: postgres:13-alpine
     volumes:

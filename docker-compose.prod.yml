@@ -1,9 +1,10 @@
 version: '3.8'
 
 services:
+  # Main Django App
   web:
     build:
-      context: ./app
+      context: app
       dockerfile: Dockerfile.prod
     command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; gunicorn --bind 0.0.0.0:${PROD_PORT} ${PROD_APP_WSGI}.wsgi'
     expose:
@@ -21,6 +22,11 @@ services:
       - "traefik.http.routers.django.rule=Host(`www.${PROD_DOMAIN}`)"
       - "traefik.http.routers.django.tls=true"
       - "traefik.http.routers.django.tls.certresolver=letsencrypt"
+
+      - "traefik.http.routers.djangononwww.rule=Host(`${PROD_DOMAIN}`)"
+      - "traefik.http.routers.djangononwww.tls=true"
+      - "traefik.http.routers.djangononwww.tls.certresolver=letsencrypt"
+
   db:
     image: postgres:13-alpine
     volumes:
